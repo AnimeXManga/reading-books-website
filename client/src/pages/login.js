@@ -56,7 +56,7 @@ class Login extends Component {
       }).then(async (response) => {
         if (response.status === 200) {
           const res = await response.json();
-          console.log(res);
+          console.log(res.id);
           if (res.message==="Đăng nhập thành công"){
           notification.open({
             message: "Thông báo",
@@ -64,7 +64,7 @@ class Login extends Component {
             icon: <SmileOutlined style={{ color: "#108ee9" }} />,
           });
           this.state.isLogin=true;
-          <Navbar isLogin={this.state.isLogin}/>
+          <Navbar isLogin={true}/>
           window.location.href =  "/";
         } else {
           notification.open({

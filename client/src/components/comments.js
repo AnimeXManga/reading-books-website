@@ -19,6 +19,8 @@ export default class Comments extends Component {
     };
     return (
       <div className="container">
+        <div className="name">
+         <h4>Comment</h4> 
         <Form
           {...layout}
           name="nest-messages"
@@ -49,6 +51,7 @@ export default class Comments extends Component {
             </Button>
           </Form.Item>
         </Form>
+      </div>
       </div>
     );
   }

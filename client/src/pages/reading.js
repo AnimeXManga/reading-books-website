@@ -46,7 +46,7 @@ export default class Reading extends Component {
               <div className="col-md-5">
                 <div className="form-group mt-3 ">
                   <div className="d-flex">
-                    {/* <p className="mr-2">
+                    <p className="mr-2">
                       <Button className="btn btn-primary isDisabled" href="/">
                         Tập Trước
                       </Button>
@@ -67,7 +67,7 @@ export default class Reading extends Component {
                         Tập Sau
                       </Button>
                     
-                    </p> */}
+                    </p>
                   </div>
                 </div>
               </div>

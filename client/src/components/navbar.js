@@ -3,6 +3,9 @@ import { Menu, Dropdown, Button } from "antd";
 import { DownOutlined } from "@ant-design/icons";
 import BreadcrumbComponent from "./breadcrumb";
 import { Link } from "react-router-dom";
+import FetchApi from ".././fetch-api";
+import BookList from "../components/booklist";
+import Footer from "../components/footer";
 
 const categoryList = ["Tất cả sách", "Light novel", "Tiểu thuyết", "Tài liệu"];
 const typeList = [
@@ -20,25 +23,38 @@ const typeList = [
   "Học đường",
 ];
 const typeMore = ["About", "Contact"];
+
 class Navbar extends Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      detail: [],
+      id: 0, 
+    };
   }
+ 
+  categoryClick = (id) => {
+    console.log(id);
+    FetchApi(`sach/sach-danhmuc/${id}/`, "GET").then((data) => {
+      this.setState({
+        detail: [].concat(data),
+      });
+    });
+  };
 
   render() {
+    const { isLogin, category } = this.props;
+    const { detail } = this.state;
+
+    console.log(isLogin);
+
     const menu = (
       <Menu>
         {categoryList.map((item, index) => {
           return (
-            <Menu.Item key={index}>
+            <Menu.Item key={index} onClick={() => this.categoryClick(index)}>
               <Link to={{ pathname: `/category/${item}` }}>
-                <Button
-                  type="link"
-                  className="dropdown-item"
-                  href="#"
-                  key={index}
-                >
+                <Button className="dropdown-item" href="#" key={index}>
                   {item}
                 </Button>
               </Link>
@@ -54,14 +70,9 @@ class Navbar extends Component {
           return (
             <Menu.Item key={index}>
               <Link to={{ pathname: `/type/${item}` }}>
-              <Button
-                type="link"
-                className="dropdown-item"
-                href={temp}
-                key={index}
-              >
-                {item}
-              </Button>
+                <Button className="dropdown-item" href={temp} key={index}>
+                  {item}
+                </Button>
               </Link>
             </Menu.Item>
           );
@@ -74,7 +85,7 @@ class Navbar extends Component {
         {typeMore.map((item, index) => {
           return (
             <Menu.Item key={index}>
-              <Button type="link" className="dropdown-item" key={index}>
+              <Button className="dropdown-item" key={index}>
                 {item}
               </Button>
             </Menu.Item>
@@ -82,6 +93,7 @@ class Navbar extends Component {
         })}
       </Menu>
     );
+
     return (
       <>
         <nav className="navbar navbar-expand-lg navbar-light">
@@ -181,6 +193,9 @@ class Navbar extends Component {
         </nav>
         <div className="container">
           <BreadcrumbComponent />
+        </div>
+        <div className="container mt-5">
+          <BookList books={detail}></BookList>
         </div>
       </>
     );

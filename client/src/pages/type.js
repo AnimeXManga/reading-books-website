@@ -54,6 +54,7 @@ export default class type extends Component {
     });
   }
   render() {
+    //gi day :))
     const { id } = this.props.match.params;
     console.log(id);
     const key1 = this.state.key1.id;

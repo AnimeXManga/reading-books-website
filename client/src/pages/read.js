@@ -6,8 +6,7 @@ import FetchApi from "../fetch-api";
 import React, { Component } from "react";
 import Chuongs from "../components/chuongs";
 import Comments from "../components/comments";
-import { Link } from "react-router-dom";
-import { toNumber } from "lodash";
+
 
 export default class Read extends Component {
   constructor(props) {
@@ -23,13 +22,14 @@ export default class Read extends Component {
 
   componentDidMount() {
     const { id } = this.props.match.params;
-    console.log(typeof(id))
+   
     FetchApi(`sach/api-sach-detail/${id}/`, "GET").then((data) => {
       this.setState({
         detail: this.state.detail.concat(data),
       });
     });
-    FetchApi(`sach/sach-danhmuc/${this.state.danhmuc}/`, "GET").then((data) => {
+    const key = this.state.danhmuc;
+    FetchApi(`sach/api-danhmuc-detail/${key}/`, "GET").then((data) => {
       this.setState({
         books: this.state.books.concat(data),
       });
@@ -38,12 +38,15 @@ export default class Read extends Component {
 
   render() {
     const { detail } = this.state;
-    const { id } = this.props.match.params;
+    
     {
       detail.map((item) => {
         this.state.danhmuc = item.danhmuc.toString();
+       
       });
+      
     }
+    console.log(this.state.danhmuc);
 
     console.log(this.state.books);
     if (detail[0]) {
@@ -136,9 +139,10 @@ export default class Read extends Component {
               <Chuongs id={detail[0].id} />
               <h4>Sách cùng danh mục</h4>
              </div>
+             <Comments />
              </div>
              
-          <Comments />
+          
           <Footer />
         </>
       );
