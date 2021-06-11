@@ -27,17 +27,17 @@ export default class team extends Component {
                   <p className="text-muted">Lead Designer</p>
                   <ul className="list-inline social-buttons">
                     <li className="list-inline-item">
-                      <Button href="https://twitter.com/AnimeXManga__">
+                      <Button href="https://twitter.com/AnimeXManga__"id="button-icon">
                         <i className="bi bi-twitter"></i>
                       </Button>
                     </li>
-                    <li className="list-inline-item">
-                      <Button href="https://www.facebook.com/gawashikumi9920/">
+                    <li className="list-inline-item ">
+                      <Button href="https://www.facebook.com/gawashikumi9920/" id="button-icon">
                         <i className="bi bi-facebook"></i>
                       </Button>
                     </li>
-                    <li className="list-inline-item">
-                      <Button href="https://www.instagram.com/thyfavailable/">
+                    <li className="list-inline-item" >
+                      <Button href="https://www.instagram.com/thyfavailable/" id="button-icon"> 
                         <i className="bi bi-instagram"></i>
                       </Button>
                     </li>
@@ -52,17 +52,17 @@ export default class team extends Component {
                   <p className="text-muted">Lead Developer</p>
                   <ul className="list-inline social-buttons">
                     <li className="list-inline-item">
-                      <Button href="#something">
+                      <Button href="#something" id="button-icon">
                         <i className="bi bi-twitter"></i>
                       </Button>
                     </li>
-                    <li className="list-inline-item">
-                      <Button href="https://www.facebook.com/duchuynh2801">
+                    <li className="list-inline-item" >
+                      <Button href="https://www.facebook.com/duchuynh2801"id="button-icon">
                         <i className="bi bi-facebook"></i>
                       </Button>
                     </li>
-                    <li className="list-inline-item">
-                      <Button href="#something">
+                    <li className="list-inline-item" >
+                      <Button href="#something"id="button-icon">
                         <i className="bi bi-instagram"></i>
                       </Button>
                     </li>

@@ -3,57 +3,94 @@ import { Menu, Dropdown, Button } from "antd";
 import { DownOutlined } from "@ant-design/icons";
 import BreadcrumbComponent from "./breadcrumb";
 import { Link } from "react-router-dom";
-import FetchApi from ".././fetch-api";
-import BookList from "../components/booklist";
-import Footer from "../components/footer";
+import { connect } from "react-redux";
+import { withRouter } from "react-router";
+import {
+  getCategoryBook,
+  setBookState,
+  getTypeBook,
+  getBookList,
+} from "../redux/books/books.actions";
+import { setUserState } from "../redux/users/users.actions";
+import removeVietnameseTones from "../utils/utils";
 
-const categoryList = ["Tất cả sách", "Light novel", "Tiểu thuyết", "Tài liệu"];
-const typeList = [
-  "Tất cả sách",
-  "Võ hiệp",
-  "Văn học hiện đại",
-  "Ngôn tình",
-  "Kinh tế",
-  "Lịch sử",
-  "Sách tham khảo",
-  "Kinh dị",
-  "Tình cảm",
-  "Phiêu lưu",
-  "Xuyên không",
-  "Học đường",
-];
-const typeMore = ["About", "Contact"];
+const mapStateToProps = (state) => ({
+  books: state.books.bookList,
+  storingBooks: state.books.storingBookList,
+  categoryList: state.books.categoryList,
+  typeList: state.books.typeList,
+  typeMore: state.books.typeMore,
+  isLogin: state.users.isLogin,
+  id: state.users.id,
+});
+
+const mapDispatchToProps = {
+  getCategoryBook,
+  getTypeBook,
+  setBookState,
+  getBookList,
+  setUserState,
+};
 
 class Navbar extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      detail: [],
-      id: 0, 
+      id: 0,
     };
   }
- 
-  categoryClick = (id) => {
-    console.log(id);
-    FetchApi(`sach/sach-danhmuc/${id}/`, "GET").then((data) => {
-      this.setState({
-        detail: [].concat(data),
-      });
-    });
+
+  categoryClick = (id, item) => {
+    this.props.setBookState({ currentPath: item });
+    if (id === 0) {
+      this.props.getBookList();
+    } else {
+      this.props.getCategoryBook(id);
+    }
+  };
+
+  typeClick = (id, item) => {
+    this.props.setBookState({ currentPath: item });
+    if (id === 0) {
+      this.props.getBookList();
+    } else {
+      this.props.getTypeBook(id);
+    }
+  };
+
+  redirectToProfile = () => {
+    console.log(this.props);
+    this.props.history.push("/profile");
+  };
+
+  handleClick = (key) => {
+
+    if (key==="false"){
+
+      this.props.history.push("/login");
+    } else {
+      this.props.history.push("/");
+      localStorage.setItem("isLogin", false);
+      this.props.setUserState({ isLogin: false });
+    }
   };
 
   render() {
-    const { isLogin, category } = this.props;
-    const { detail } = this.state;
-
-    console.log(isLogin);
-
+    const { categoryList, typeList, typeMore } = this.props;
+    const location = window.location.pathname.split("/")[1];
+    const isLogin = localStorage.getItem("isLogin");
+console.log(isLogin)
     const menu = (
       <Menu>
         {categoryList.map((item, index) => {
           return (
-            <Menu.Item key={index} onClick={() => this.categoryClick(index)}>
-              <Link to={{ pathname: `/category/${item}` }}>
+            <Menu.Item
+              key={index}
+              onClick={() => this.categoryClick(index, item)}
+            >
+              <Link
+                to={{ pathname: `/category/${removeVietnameseTones(item)}` }}
+              >
                 <Button className="dropdown-item" href="#" key={index}>
                   {item}
                 </Button>
@@ -63,19 +100,26 @@ class Navbar extends Component {
         })}
       </Menu>
     );
+
     const menu2 = (
       <Menu>
         {typeList.map((item, index) => {
-          const temp = "#" + item;
-          return (
-            <Menu.Item key={index}>
-              <Link to={{ pathname: `/type/${item}` }}>
-                <Button className="dropdown-item" href={temp} key={index}>
-                  {item}
-                </Button>
-              </Link>
-            </Menu.Item>
-          );
+          if (!(item === "null")) {
+            const temp = "#" + item;
+            return (
+              <Menu.Item
+                key={index}
+                onClick={() => this.typeClick(index, item)}
+              >
+                <Link to={{ pathname: `/type/${removeVietnameseTones(item)}` }}>
+                  <Button className="dropdown-item" href={temp} key={index}>
+                    {item}
+                  </Button>
+                </Link>
+              </Menu.Item>
+            );
+          }
+          // return true;
         })}
       </Menu>
     );
@@ -161,44 +205,54 @@ class Navbar extends Component {
                 <div className="nav-item ">
                   <Button
                     type="primary"
-                    href="/login"
+                    onClick={() =>
+                      this.handleClick(isLogin)
+                    }
                     className="btn btn-primary login-btn"
                     aria-haspopup="true"
                     aria-expanded="false"
                   >
-                    Login
+                    {isLogin === 'true' ? "Logout" : "Login"}
                   </Button>
                 </div>
-                <div className="nav-item">
-                  <Button
-                    type="primary"
-                    href="/signup"
-                    className="btn ml-1 btn-primary sign-up-btn"
-                  >
-                    Sign up
-                  </Button>
-                </div>
-                <div className="nav-item">
-                  <Button
-                    type="primary"
-                    href="/profile/6"
-                    className="btn ml-1 btn-primary sign-up-btn"
-                  >
-                    Profile
-                  </Button>
-                </div>
+
+                {isLogin === 'true' ? (
+                  <div className="nav-item">
+                    <Button
+                      type="primary"
+                      onClick={() => {
+                        this.redirectToProfile();
+                      }}
+                      className="btn ml-1 btn-primary sign-up-btn"
+                    >
+                      Profile
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="nav-item">
+                    <Button
+                      type="primary"
+                      href="/signup"
+                      className="btn ml-1 btn-primary sign-up-btn"
+                    >
+                      Sign up
+                    </Button>
+                  </div>
+                )}
               </div>
             </div>
           </div>
         </nav>
+
         <div className="container">
-          <BreadcrumbComponent />
-        </div>
-        <div className="container mt-5">
-          <BookList books={detail}></BookList>
+          {location === "reading" || location === "read" ? (
+            <></>
+          ) : (
+            <BreadcrumbComponent />
+          )}
         </div>
       </>
     );
   }
 }
-export default Navbar;
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Navbar));

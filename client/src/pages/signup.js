@@ -2,16 +2,31 @@ import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import Image from "../asset/img/wallpaper_login.png";
 import { Button, Checkbox, notification } from "antd";
-/* import {Redirect} from 'react-router-dom'; */
 import { SmileOutlined } from "@ant-design/icons";
+import Popup from "../components/popup";
+import { postRegister } from "../redux/users/users.actions";
+import { connect } from "react-redux";
 
-export default class Signup extends Component {
+const mapStateToProps = (state) => ({
+  message: state.users.message,
+});
+
+const mapDispatchToProps = {
+  postRegister,
+};
+
+class Signup extends Component {
   constructor() {
     super();
     this.state = {
       showPopup: false,
       isAgree: false,
-      input: {},
+      input: {
+        username: "",
+        email: "",
+        password: "",
+        confirm_password: "",
+      },
       errors: {},
       checked: false,
     };
@@ -35,7 +50,6 @@ export default class Signup extends Component {
 
   handleChange(key, value) {
     let input = this.state.input;
-    console.log(key, value);
 
     input[key] = value;
     this.setState({
@@ -45,42 +59,22 @@ export default class Signup extends Component {
 
   handleSubmit = async (e) => {
     e.preventDefault();
+    console.log(this.validate());
     if (this.validate()) {
-      console.log(this.state);
-
-      let input = {};
-      input["username"] = "";
-      input["email"] = "";
-      input["password"] = "";
-      input["confirm_password"] = "";
-      this.setState({ input: input });
-
-      this.state.checked = true;
-    }
-    if (this.state.checked === true) {
       const body = this.state.input;
-      console.log(body);
-      await fetch("http://127.0.0.1:8000/register/", {
-        method: "POST",
-        body: JSON.stringify(body),
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-      }).then(async (response) => {
-        if (response.status === 200) {
-          const res = await response.json();
-          console.log(res);
+      this.props.postRegister(body).then((data) => {
+        const { message } = this.props;
+        if (data) {
           notification.open({
             message: "Thành công",
-            description: res.message,
+            description: message,
             icon: <SmileOutlined style={{ color: "#108ee9" }} />,
           });
-          window.location.href = "/login";
+          this.props.history.push("/login");
         } else {
           notification.open({
             message: "Thất bại",
-            description: "Tên người dùng bị trùng",
+            description: message,
             icon: <SmileOutlined style={{ color: "#108ee9" }} />,
           });
         }
@@ -119,6 +113,7 @@ export default class Signup extends Component {
       isValid = false;
       errors["password"] = "Please enter your password.";
     }
+
     if (input["password"].length < 6) {
       isValid = false;
       errors["password"] = "Password must be more longer than 6.";
@@ -145,6 +140,7 @@ export default class Signup extends Component {
 
     return isValid;
   }
+
   render() {
     const { isAgree } = this.state;
 
@@ -290,65 +286,4 @@ export default class Signup extends Component {
   }
 }
 
-class Popup extends Component {
-  render() {
-    return (
-      <div
-        className="modal fade"
-        id="exampleModalScrollable"
-        tabindex="-1"
-        role="dialog"
-        aria-labelledby="exampleModalScrollableTitle"
-        aria-hidden="true"
-      >
-        <div className="modal-dialog modal-dialog-scrollable" role="document">
-          <div className="modal-content">
-            <div className="modal-header">
-              <h5 className="modal-title" id="exampleModalScrollableTitle">
-                Terms &amp; Conditions
-              </h5>
-              <button
-                type="button"
-                className="close"
-                data-dismiss="modal"
-                aria-label="Close"
-              >
-                <span aria-hidden="true"></span>
-              </button>
-            </div>
-            <div className="modal-body">
-              Article 1 (Purpose) The purpose of the following Terms and
-              Conditions of Use(‘T&amp;C’) is to establish guidelines on rights,
-              duties and responsibilities of cybermall Users utilizing the
-              internet-related services (hereinafter referred to as the
-              ‘Services’) provided by the playcompany cybermall (hereinafter
-              referred to as the ‘Mall’) operated by PLAYCOMPANY (e-commerce and
-              the name of personal information manager on the main page of the
-              ‘Mall’. Only the content of this T&amp;C can be displayed though a
-              link page. ② Prior to User’s final agreement to this T&amp;C, the
-              ‘Mall’ shall provide a separate link or pop-up screen to obtain
-              User’s verification on the terms of cancellation rights, delivery
-              responsibilities, refund conditions and other important details. ③
-              The ‘Mall’ may make amendments within the permissible range
-              without violating applicable laws such as the 「Act on Consumer
-              Protection in Electronic Com and all e-commerce-related lawsuits
-              between the ‘Mall’ and a User shall be governed by the law of the
-              Republic of Viet Nam.
-            </div>
-
-            <div className="modal-footer">
-              <button
-                type="button"
-                className="btn btn-secondary"
-                data-dismiss="modal"
-                onClick={this.props.closePopup}
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-}
+export default connect(mapStateToProps, mapDispatchToProps)(Signup);

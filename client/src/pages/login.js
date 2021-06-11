@@ -1,8 +1,20 @@
 import React, { Component } from "react";
 import Image from "../asset/img/wallpaper_login.png";
 import { Button, notification } from "antd";
-import { SmileOutlined, FrownOutlined } from "@ant-design/icons";
-import Navbar from "../components/navbar";
+import { SmileOutlined } from "@ant-design/icons";
+import ForgotPassword from "../components/forgor-password";
+import { postLogin, getUserDetail } from "../redux/users/users.actions";
+import { connect } from "react-redux";
+
+const mapStateToProps = (state) => ({
+  message: state.users.message,
+  isLogin: state.users.isLogin,
+});
+
+const mapDispatchToProps = {
+  postLogin,
+  getUserDetail,
+};
 
 class Login extends Component {
   constructor(props) {
@@ -12,77 +24,49 @@ class Login extends Component {
       errors: {},
       checked: false,
       forgot: false,
-      isLogin: false,
     };
   }
+
   forgot() {
     this.setState({ forgot: true });
   }
-  handleClick (e) {
-    this.setState({forgot: e});
+
+  handleClick(e) {
+    this.setState({ forgot: e });
     console.log(e);
   }
+
   handleChange(key, value) {
     let input = this.state.input;
-    console.log(key, value);
 
     input[key] = value;
     this.setState({
       input,
     });
   }
+
   handleSubmit = async (e) => {
     e.preventDefault();
     if (this.validate()) {
-      console.log(this.state);
-
-      let input = {};
-      input["username"] = "";
-      input["password"] = "";
-      this.setState({ input: input });
-
-      this.state.checked = true;
-    }
-    if (this.state.checked === true) {
       const body = this.state.input;
-      console.log(body);
-      await fetch("http://127.0.0.1:8000/login/", {
-        method: "POST",
-        body: JSON.stringify(body),
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-      }).then(async (response) => {
-        if (response.status === 200) {
-          const res = await response.json();
-          console.log(res.id);
-          if (res.message==="Đăng nhập thành công"){
+      this.props.postLogin(body).then((data) => {
+        const { message } = this.props;
+        if (data.isLogin) {
+          localStorage.setItem('isLogin', data.isLogin);
+          localStorage.setItem('userId', data.res.id);
           notification.open({
             message: "Thông báo",
-            description: res.message,
+            description: message,
             icon: <SmileOutlined style={{ color: "#108ee9" }} />,
           });
-          this.state.isLogin=true;
-          <Navbar isLogin={true}/>
-          window.location.href =  "/";
+          this.props.getUserDetail(data.res.id);
+          this.props.history.push(`/`);
         } else {
           notification.open({
             message: "Thông báo",
-            description: res.message,
-            icon: <FrownOutlined style={{ color: "#108ee9" }} />,
+            description: message,
+            icon: <SmileOutlined style={{ color: "#108ee9" }} />,
           });
-          this.state.isLogin=false;
-        }
-            
-          
-        } else {
-          notification.open({
-            message: "Thất bại",
-            description: "Tên người dùng bị trùng",
-            icon: <FrownOutlined style={{ color: "#108ee9" }} />,
-          });
-          this.state.isLogin=false;
         }
       });
     } else {
@@ -112,7 +96,6 @@ class Login extends Component {
     return isValid;
   }
   render() {
-    console.log(this.state.isLogin);
     return (
       <>
         <div className="login">
@@ -171,9 +154,9 @@ class Login extends Component {
                             className="btn btn-primary btn-block mt-4"
                             value="Login"
                           />
-                         {/*  <div className="text-center mt-2">
+                           <div className="text-center mt-2">
                             <Button type="link" onClick={this.forgot.bind(this)}>Forgot Your password?</Button>
-                          </div> */}
+                          </div>
                           <div className="text-center mt-2">
                             <Button href="/signup" type="link">
                               Have an account yet?
@@ -198,28 +181,4 @@ class Login extends Component {
     );
   }
 }
-export default Login;
-class ForgotPassword extends React.Component {
-  reset() {
-    alert("Password is sent to your email");
-  }
-
-  render() {
-    return (
-      <>
-        <h2>Write your email</h2>
-        <div className="form-group">
-          <input
-            type="email"
-            className="form-control"
-            placeholder="Email"
-            required="required"
-          />
-        </div>
-        <button className="btn btn-primary" onClick={this.reset.bind(this)}>
-          Reset Password
-        </button>
-      </>
-    );
-  }
-}
+export default connect(mapStateToProps, mapDispatchToProps)(Login);

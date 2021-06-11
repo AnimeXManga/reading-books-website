@@ -1,35 +1,46 @@
 import React, { Component } from "react";
 import { Button } from "antd";
-import FetchApi from "../fetch-api";
-import {Link} from "react-router-dom"
-export default class Chuongs extends Component {
+import { Link } from "react-router-dom";
+import { connect } from "react-redux";
+import { setBookState } from "../redux/books/books.actions";
+
+const mapStateToProps = (state) => ({
+  chapterList: state.books.chapterList,
+});
+
+const mapDispatchToProps = {
+  setBookState,
+};
+
+class Chuongs extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-      detail: [],
-      id: "",
-    };
+    this.state = {};
   }
-  componentDidMount() {
-    const { id } = this.props;
-    FetchApi(`sach/chuong/${id}/`, "GET").then((data) => {
-      this.setState({
-        detail: this.state.detail.concat(data),
-      });
-    });
-  }
-  render() {
-    const { detail } = this.state;
-console.log(detail)
+  componentDidMount() {}
 
-    if (detail) {
+  currentChapter(id) {
+    this.props.setBookState({ currentChapter: id });
+    localStorage.setItem("currentChapter", id);
+  }
+
+  render() {
+    const { chapterList } = this.props;
+
+    if (chapterList) {
       return (
         <>
-          {detail.map((chaper, index) => {
+          {chapterList.map((chapter, index) => {
             return (
               <Button type="link" className="d-flex" key={index}>
-                <Link to={{pathname: `/reading/${chaper.id}`,aboutProps:  `${chaper.tieude}` }}>
-                {chaper.sochuong}
+                <Link
+                  to={{
+                    pathname: `/read/${chapter.tieude}/reading`,
+                    state: { currentChapter: chapter.id },
+                  }}
+                  onClick={() => this.currentChapter(chapter.id)}
+                >
+                  {chapter.sochuong}
                 </Link>
               </Button>
             );
@@ -39,3 +50,5 @@ console.log(detail)
     } else return <></>;
   }
 }
+
+export default connect(mapStateToProps, mapDispatchToProps)(Chuongs);

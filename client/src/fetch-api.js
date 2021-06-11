@@ -11,10 +11,10 @@ export default async function FetchApi(extend, method, data) {
     },
   };
 
-  console.log(!data);
   if (!data) {
     delete option.body;
   }
+  
   console.log(option, fullUrl);
   const response = await fetch(fullUrl, option);
   return response.json();

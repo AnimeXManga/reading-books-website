@@ -6,9 +6,7 @@ import _ from "lodash";
 export default class BookList extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-      temp: "",
-    };
+    this.state = {};
   }
 
   render() {
@@ -38,6 +36,7 @@ export default class BookList extends Component {
                   title={book.tieude}
                   author={book.tacgia}
                   id={book.id}
+                  mota={book.mota}
                 />
               </Col>
             );

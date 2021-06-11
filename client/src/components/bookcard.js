@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
 
-
 /* import { Redirect } from "react-router-dom";
 import FetchApi from "../fetch-api"; */
 
@@ -9,7 +8,7 @@ export default class bookcard extends Component {
   constructor(props) {
     super(props);
     this.state = {
-     /*  detail: [], */
+      /*  detail: [], */
     };
   }
 
@@ -25,14 +24,22 @@ export default class bookcard extends Component {
 
   render() {
     const BookCard = this.props;
-   /*  const { detail } = this.state; */
-
-    /* console.log(detail); */
 
     return (
       <>
+        {/*    <Popover content={content}> */}
         <div className="card-container">
-          <img className="image-card" src={BookCard.image} alt="" />
+          <div className="card">
+            <div className="image-card">
+              <img src={BookCard.image} alt="" />
+            </div>
+            <div className="details">
+              <div className="center">
+                <h1>{BookCard.title}</h1>
+                <p>{BookCard.mota}</p>
+              </div>
+            </div>
+          </div>
           <div className="desc">
             <h2
               style={{
@@ -45,16 +52,20 @@ export default class bookcard extends Component {
             </h2>
             <h3>Author: {BookCard.author} </h3>
 
-            <Link to={{pathname: `/read/${BookCard.id}`, state: {foo: BookCard.id}}}
+            <Link
+              to={{
+                pathname: `/read/${BookCard.id}`,
+                state: { foo: BookCard.id },
+              }}
               className="btn btn-primary"
-             /*  onClick={() => this.detailClick(BookCard.id)} */
+              /*  onClick={() => this.detailClick(BookCard.id)} */
             >
               Read Now!
             </Link>
             {/* <Read detail={detail} /> */}
-            
           </div>
         </div>
+        {/* </Popover> */}
       </>
     );
   }
